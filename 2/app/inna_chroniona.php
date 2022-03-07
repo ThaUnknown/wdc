@@ -13,7 +13,7 @@ include _ROOT_PATH.'/app/security/check.php';
 <body>
 
 <div style="width:90%; margin: 2em auto;">
-	<a href="<?php print(_APP_ROOT); ?>/app/calc.php" class="pure-button">Powrót do kalkulatora</a>
+	<a href="<?php print(_APP_ROOT); ?>/app/controller.php" class="pure-button">Powrót do kalkulatora</a>
 	<a href="<?php print(_APP_ROOT); ?>/app/security/logout.php" class="pure-button pure-button-active">Wyloguj</a>
 </div>
 
