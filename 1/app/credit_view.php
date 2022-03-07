@@ -9,18 +9,13 @@
 
 <body>
 
-	<form action="<?php print(_APP_URL); ?>/app/calc.php" method="post">
-		<label for="id_x">Liczba 1: </label>
-		<input id="id_x" type="text" name="x" value="<?php print($x); ?>" /><br />
-		<label for="id_op">Operacja: </label>
-		<select name="op">
-			<option value="plus">+</option>
-			<option value="minus">-</option>
-			<option value="times">*</option>
-			<option value="div">/</option>
-		</select><br />
-		<label for="id_y">Liczba 2: </label>
-		<input id="id_y" type="text" name="y" value="<?php print($y); ?>" /><br />
+	<form action="<?php print(_APP_URL); ?>/app/credit.php" method="post">
+		<label for="id_x">Okres splaty: </label>
+		<input id="id_x" type="number" name="x" value="<?php isset($x) ? print($x) : null; ?>" />miesiecy<br />
+		<label for="id_y">Kwota kredytu: </label>
+		<input id="id_y" type="number" name="y" value="<?php isset($y) ? print($y) : null; ?>" /><br />
+		<label for="id_z">Oprocentowanie: </label>
+		<input id="id_z" type="number" name="z" value="<?php isset($z) ? print($z) : null; ?>" />%<br />
 		<input type="submit" value="Oblicz" />
 	</form>
 
@@ -37,9 +32,12 @@
 	}
 	?>
 
-	<?php if (isset($result)) { ?>
+	<?php if (isset($result) && isset($monthly)) { ?>
 		<div style="margin: 20px; padding: 10px; border-radius: 5px; background-color: #ff0; width:300px;">
-			<?php echo 'Wynik: ' . $result; ?>
+			<?php echo 'Kwota: ' . $result; ?>
+		</div>
+		<div style="margin: 20px; padding: 10px; border-radius: 5px; background-color: #ff0; width:300px;">
+			<?php echo 'Rata miesieczna: ' . $monthly; ?>
 		</div>
 	<?php } ?>
 
