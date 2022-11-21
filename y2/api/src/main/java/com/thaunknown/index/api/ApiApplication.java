@@ -3,11 +3,18 @@ package com.thaunknown.index.api;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.util.ResourceUtils;
 
@@ -18,6 +25,9 @@ import com.google.gson.JsonElement;
 @SpringBootApplication
 public class ApiApplication {
   static Gson gson = new Gson();
+
+  @Autowired
+  JdbcTemplate jdbcTemplate;
 
   public static void main(String[] args) {
     SpringApplication.run(ApiApplication.class, args);
@@ -38,5 +48,19 @@ public class ApiApplication {
     JsonElement json = gson.fromJson(Files.readString(ResourceUtils.getFile("classpath:" + type + ".json").toPath()), JsonElement.class);
     JsonElement element = json.getAsJsonObject().get(id);
     return gson.toJson(element);
+  }
+
+  @PostMapping("/login")
+  String login(HttpSession session, @RequestParam(value = "username") String login, @RequestParam(value = "password") String password) {
+    String SQL = "select * from uzytkownicy";
+    List<Users> users = jdbcTemplate.query(SQL, new UserMapper());
+
+    for(Users user: users){
+      if(login.equals(user.getLogin()) && password.equals(user.getPassword())){
+        return "true";
+      }
+    }
+    
+    return "false";
   }
 }
