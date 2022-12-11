@@ -29,38 +29,57 @@ public class ApiApplication {
   @Autowired
   JdbcTemplate jdbcTemplate;
 
-  public static void main(String[] args) {
+  public static void main (String[] args) {
     SpringApplication.run(ApiApplication.class, args);
   }
 
   @GetMapping("/")
-  String root() {
+  String root () {
     return "No path specified. Try: collections, columns, items, sections. \n Eg: /columns or /items/{slug}";
   }
 
   @GetMapping("/{type}")
-  String collectionType(@PathVariable String type) throws FileNotFoundException, IOException {
+  String collectionType (@PathVariable String type) throws FileNotFoundException, IOException {
     return Files.readString(ResourceUtils.getFile("classpath:" + type + ".json").toPath());
   }
 
   @GetMapping("/{type}/{id}")
-  String collectionItem(@PathVariable String type, @PathVariable String id) throws FileNotFoundException, IOException {
+  String collectionItem (@PathVariable String type, @PathVariable String id) throws FileNotFoundException, IOException {
     JsonElement json = gson.fromJson(Files.readString(ResourceUtils.getFile("classpath:" + type + ".json").toPath()), JsonElement.class);
     JsonElement element = json.getAsJsonObject().get(id);
     return gson.toJson(element);
   }
 
   @PostMapping("/login")
-  String login(HttpSession session, @RequestParam(value = "username") String login, @RequestParam(value = "password") String password) {
-    String SQL = "select * from uzytkownicy";
+  String login (HttpSession session, @RequestParam(value = "username") String login, @RequestParam(value = "password") String password) {
+    String SQL = "select * from users";
     List<Users> users = jdbcTemplate.query(SQL, new UserMapper());
 
-    for(Users user: users){
-      if(login.equals(user.getLogin()) && password.equals(user.getPassword())){
+    for (Users user: users){
+      if (login.equals(user.getLogin()) && password.equals(user.getPassword())) {
+        session.setAttribute("login", login);
         return "true";
       }
     }
     
     return "false";
+  }
+
+  @PostMapping("/create")
+  String createUser (HttpSession session, @RequestParam(value = "username") String login, @RequestParam(value = "password") String password) {
+
+    if (session.getAttribute(login) != null) return "false";
+    // de-dupe
+    String SQL = "select * from users";
+    List<Users> users = jdbcTemplate.query(SQL, new UserMapper());
+
+    for (Users user: users) {
+      if (login.equals(user.getLogin())) return "false";
+    }
+
+    //create
+    String query = "INSERT INTO users(id, login, password) values(?,?,?)";
+    jdbcTemplate.update(query, users.size(), login, password);
+    return "true";
   }
 }

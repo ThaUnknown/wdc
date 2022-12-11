@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 
 public class UserMapper implements RowMapper<Users> {
-  public Users mapRow(ResultSet rs, int row) throws SQLException {
+  public Users mapRow (ResultSet rs, int row) throws SQLException {
     Users users = new Users();
     users.setId(rs.getInt("id"));
     users.setLogin(rs.getString("login"));
